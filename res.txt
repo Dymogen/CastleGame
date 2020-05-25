@@ -1,0 +1,1394 @@
+const canvas = document.getElementById("myCanvas");
+const ctx = canvas.getContext("2d");
+// *Only for device that have more width then height {Remake}
+canvas.width = window.innerHeight;
+canvas.height = window.innerHeight;
+canvas.style.marginLeft = (window.innerWidth - window.innerHeight) / 2 + "px";
+let objects = [];
+let index = 0;
+const imgHeightWidth = canvas.width / 5;
+
+let gamer = [];
+for (let i = 0; i < 4; i++) {
+  gamer[i] = new Image();
+  gamer[i].src = "img/wizzard" + i + ".png";
+}
+const pos = {
+  x: 0,
+  y: 0
+};
+let timeVarx = pos.x;
+let timeVary = pos.y;
+window.onload = () => {
+  window.addEventListener("keydown", move, false);
+  for (let i = 0; i <= 12; i++) {
+    objects[i] = new Image();
+    if (i <= 6) {
+      objects[i].src = "img/wall_vines" + i + ".png";
+    } else if (i > 6 && i <= 12) {
+      const blockid = i - 7;
+      objects[i].src = "img/crystal_floor" + blockid + ".png";
+    }
+  }
+  document.getElementById("body").style.backgroundColor = "black";
+  game();
+};
+function game() {
+  canvas.width = window.innerHeight;
+  canvas.height = window.innerHeight;
+  canvas.style.marginLeft = (window.innerWidth - window.innerHeight) / 2 + "px";
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  update();
+  requestAnimationFrame(game);
+}
+function update() {
+  const idx_x = Math.floor(pos.x / imgHeightWidth);
+  const idx_y = Math.floor(pos.y / imgHeightWidth);
+  const x = pos.x % imgHeightWidth;
+  const y = pos.y % imgHeightWidth;
+  let blocx, blocy;
+  blocx = 7;
+  blocy = 7;
+  if (map.length * imgHeightWidth - pos.x - 7 * imgHeightWidth < 0) {
+    blocx = Math.ceil((map.length * imgHeightWidth - pos.x) / imgHeightWidth);
+  }
+  if (map.length * imgHeightWidth - pos.y - 7 * imgHeightWidth < 0) {
+    blocy = Math.ceil((map.length * imgHeightWidth - pos.y) / imgHeightWidth);
+  }
+  for (i = 0; i < blocx; i++) {
+    for (j = 0; j < blocy; j++) {
+      render(
+        objects[map[idx_y + j][idx_x + i]],
+        imgHeightWidth * i - x,
+        imgHeightWidth * j - y
+      );
+    }
+  }
+}
+function render(img, x, y) {
+  ctx.drawImage(img, x, y, imgHeightWidth, imgHeightWidth);
+  if (pos.x != timeVarx || pos.y != timeVary) {
+    index == 3 ? (index = 0) : index++;
+  }
+
+  ctx.drawImage(
+    gamer[index],
+    imgHeightWidth,
+    imgHeightWidth,
+    imgHeightWidth / 2.66,
+    imgHeightWidth / 2.26
+  );
+  timeVarx = pos.x;
+  timeVary = pos.y;
+}
+function move(event) {
+  if (event.keyCode == "37") {
+    //arrow left	37
+    if (
+      map[Math.floor((pos.y + imgHeightWidth) / imgHeightWidth)][
+        Math.floor(
+          (pos.x + imgHeightWidth - imgHeightWidth / 30) / imgHeightWidth
+        )
+      ] <= 6
+    ) {
+      return;
+    }
+    pos.x -= imgHeightWidth / 30;
+    if (pos.x < 0) pos.x = 0;
+  }
+  if (event.keyCode == "38") {
+    //arrow up	38
+    //верхний угол картинки
+    if (
+      map[
+        Math.floor(
+          (pos.y + imgHeightWidth - imgHeightWidth / 30) / imgHeightWidth
+        )
+      ][Math.floor((pos.x + imgHeightWidth) / imgHeightWidth)] <= 6
+    ) {
+      return;
+    }
+    pos.y -= imgHeightWidth / 30;
+    if (pos.y < 0) pos.y = 0;
+  }
+  if (event.keyCode == "39") {
+    //arrow right	39
+
+    if (
+      map[Math.floor((pos.y + imgHeightWidth) / imgHeightWidth)][
+        Math.floor(
+          (pos.x +
+            imgHeightWidth +
+            imgHeightWidth / 30 +
+            imgHeightWidth / 2.66) /
+            imgHeightWidth
+        )
+      ] <= 6
+    ) {
+      return;
+    }
+    pos.x += imgHeightWidth / 30;
+    if (pos.x > map.length * imgHeightWidth)
+      pos.x = map.length * imgHeightWidth;
+  }
+  if (event.keyCode == "40") {
+    //arrow down	40
+    if (
+      map[
+        Math.floor(
+          (pos.y +
+            imgHeightWidth +
+            imgHeightWidth / 30 +
+            imgHeightWidth / 2.26) /
+            imgHeightWidth
+        )
+      ][Math.floor((pos.x + imgHeightWidth) / imgHeightWidth)] <= 6
+    ) {
+      return;
+    }
+    pos.y += imgHeightWidth / 30;
+    if (pos.y > map.length * imgHeightWidth)
+      pos.y = map.length * imgHeightWidth;
+  }
+}
+
+
+
+
+
+
+
+
+let map = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0, 7, 7, 1, 7, 7, 7, 7, 7, 7, 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0],
+    [0, 8, 7, 1, 7, 7, 7, 7, 7, 5, 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0],
+    [0, 1, 7, 7, 7, 5, 7, 7, 7, 7, 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0],
+    [0, 7, 7, 3, 7, 7, 7, 7, 7, 7, 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0],
+    [0, 7, 7, 7, 7, 7, 7, 5, 7, 7, 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 5, 7, 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0],
+    [0, 7, 7, 5, 7, 7, 7, 7, 7, 7, 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0],
+    [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+  ];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const canvas = document.getElementById("myCanvas");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerHeight;
+canvas.height = window.innerHeight;
+if (window.innerWidth >= window.innerHeight)
+{
+  canvas.style.marginLeft = (window.innerWidth - window.innerHeight) / 2 + "px";
+}
+else
+{
+  canvas.style.marginTop = (window.innerHeight - window.innerWidth) / 2 + "px";
+}
+let objects = [];
+let index = 0;
+const imgHeightWidth = canvas.width / 5;
+
+let gamer = [];
+for (let i = 0; i < 4; i++)
+{
+  gamer[i] = new Image();
+  gamer[i].src = "img/wizzard" + i + ".png";
+}
+const pos = {
+  x: 0,
+  y: 0
+};
+let timeVarx = pos.x;
+let timeVary = pos.y;
+window.onload = () =>
+{
+  window.addEventListener("keydown", move, false);
+  for (let i = 0; i <= 14; i++)
+  {
+    objects[i] = new Image();
+    if (i <= 6)
+    {
+      objects[i].src = "img/wall_vines" + i + ".png";
+    } else if (i > 6 && i <= 12)
+    {
+      const blockid = i - 7;
+      objects[i].src = "img/crystal_floor" + blockid + ".png";
+    } else if (i == 13)
+    {
+      objects[i].src = "img/dngn_closed_door.png";
+    }
+    else if (i == 14)
+    {
+      objects[i].src = "img/dngn_open_door.png";
+    }
+  }
+  document.getElementById("body").style.backgroundColor = "black";
+  game();
+};
+function game()
+{
+  canvas.width = window.innerHeight;
+  canvas.height = window.innerHeight;
+  if (window.innerWidth >= window.innerHeight)
+  {
+    canvas.style.marginLeft = (window.innerWidth - window.innerHeight) / 2 + "px";
+  }
+  else
+  {
+    canvas.style.marginTop = (window.innerHeight - window.innerWidth) / 2 + "px";
+  }
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  update();
+  requestAnimationFrame(game);
+}
+function update()
+{
+  const idx_x = Math.floor(pos.x / imgHeightWidth);
+  const idx_y = Math.floor(pos.y / imgHeightWidth);
+  const x = pos.x % imgHeightWidth;
+  const y = pos.y % imgHeightWidth;
+  let blocx, blocy;
+  blocx = 7;
+  blocy = 7;
+  if (map.length * imgHeightWidth - pos.x - 7 * imgHeightWidth < 0)
+  {
+    blocx = Math.ceil((map.length * imgHeightWidth - pos.x) / imgHeightWidth);
+  }
+  if (map.length * imgHeightWidth - pos.y - 7 * imgHeightWidth < 0)
+  {
+    blocy = Math.ceil((map.length * imgHeightWidth - pos.y) / imgHeightWidth);
+  }
+  for (i = 0; i < blocx; i++)
+  {
+    for (j = 0; j < blocy; j++)
+    {
+      render(
+        objects[map[idx_y + j][idx_x + i]],
+        imgHeightWidth * i - x,
+        imgHeightWidth * j - y
+      );
+    }
+  }
+}
+function render(img, x, y)
+{
+  if (pos.x != timeVarx || pos.y != timeVary)
+  {
+    index == 3 ? (index = 0) : index++;
+  }
+  if (map[
+    Math.floor(
+      (pos.y + imgHeightWidth + imgHeightWidth / 2.26) / imgHeightWidth
+    )
+  ][Math.floor((pos.x + imgHeightWidth) / imgHeightWidth)] == 13)
+  {
+    if (img != objects[13])
+    {
+      ctx.drawImage(img, x, y, imgHeightWidth, imgHeightWidth);
+    }
+    else 
+    {
+      map[
+        Math.floor(
+          (pos.y + imgHeightWidth + imgHeightWidth / 2.26) / imgHeightWidth
+        )
+      ][Math.floor((pos.x + imgHeightWidth) / imgHeightWidth)] = 14;
+      ctx.drawImage(objects[map[
+        Math.floor(
+          (pos.y + imgHeightWidth + imgHeightWidth / 2.26) / imgHeightWidth
+        )
+      ][Math.floor((pos.x + imgHeightWidth) / imgHeightWidth)]], x, y, imgHeightWidth, imgHeightWidth);
+    }
+  } else
+  {
+    ctx.drawImage(img, x, y, imgHeightWidth, imgHeightWidth);
+    ctx.drawImage(
+      gamer[index],
+      imgHeightWidth,
+      imgHeightWidth,
+      imgHeightWidth / 2.66,
+      imgHeightWidth / 2.26
+    );
+  }
+  timeVarx = pos.x;
+  timeVary = pos.y;
+}
+function move(event)
+{
+  if (event.keyCode == "37")
+  {
+    //arrow left	37
+    if (
+      map[Math.floor((pos.y + imgHeightWidth) / imgHeightWidth)][
+      Math.floor(
+        (pos.x + imgHeightWidth - imgHeightWidth / 30) / imgHeightWidth
+      )
+      ] <= 6
+    )
+    {
+      return;
+    }
+    pos.x -= imgHeightWidth / 30;
+    if (pos.x < 0) pos.x = 0;
+  }
+  if (event.keyCode == "38")
+  {
+    //arrow up	38
+    //верхний угол картинки
+    if (
+      map[
+      Math.floor(
+        (pos.y + imgHeightWidth - imgHeightWidth / 30) / imgHeightWidth
+      )
+      ][Math.floor((pos.x + imgHeightWidth) / imgHeightWidth)] <= 6
+    )
+    {
+      return;
+    }
+    pos.y -= imgHeightWidth / 30;
+    if (pos.y < 0) pos.y = 0;
+  }
+  if (event.keyCode == "39")
+  {
+    //arrow right	39
+
+    if (
+      map[Math.floor((pos.y + imgHeightWidth) / imgHeightWidth)][
+      Math.floor(
+        (pos.x +
+          imgHeightWidth +
+          imgHeightWidth / 30 +
+          imgHeightWidth / 2.66) /
+        imgHeightWidth
+      )
+      ] <= 6
+    )
+    {
+      return;
+    }
+    pos.x += imgHeightWidth / 30;
+    if (pos.x > map.length * imgHeightWidth)
+      pos.x = map.length * imgHeightWidth;
+  }
+  if (event.keyCode == "40")
+  {
+    //arrow down	40
+    if (
+      map[
+      Math.floor(
+        (pos.y +
+          imgHeightWidth +
+          imgHeightWidth / 30 +
+          imgHeightWidth / 2.26) /
+        imgHeightWidth
+      )
+      ][Math.floor((pos.x + imgHeightWidth) / imgHeightWidth)] <= 6
+    )
+    {
+      return;
+    }
+    pos.y += imgHeightWidth / 30;
+    if (pos.y > map.length * imgHeightWidth)
+      pos.y = map.length * imgHeightWidth;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+let stop = false;
+elemText = document.getElementById("text");
+let fillText;
+function anim(str)
+{
+    elemText.style.display = "block";
+    for (let i = 0; i < str.length; i++)
+    {
+        elemText.style.width = 2 * imgHeightWidth + "px";
+        elemText.style.left = (window.innerWidth - 2 * imgHeightWidth) / 2 + "px";
+        const sent = str[i]
+        for (let j = 0; j < sent.length; j++)
+        {
+            const Stringf = elemText.textContent + sent[j];
+            setTimeout(anim, 10, Stringf);
+            //elemText.textContent = elemText.textContent + sent[j];
+
+        }
+    }
+    function anim(Stringf)
+    {
+        elemText.textContent = Stringf;
+    }
+
+    setTimeout(() => { elemText.style.display = "none"; stop = false; elemText.innerHTML = "" }, 10000);
+}
+function dialogue(numb)
+{
+    if (numb == 1)
+    {
+        stop = true;
+        fillText = ["Привет игрок! ", "Ты находишься в замке", " надо найти выход из замка", " & ", "отыскать всё необходимое для этого.", " Удачи!"];
+        anim(fillText);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+let stop = false;
+elemText = document.getElementById("text");
+let fillText;
+
+
+function anim(str)
+{
+    elemText.style.width = 2 * imgHeightWidth + "px";
+    elemText.style.left = (window.innerWidth - 2 * imgHeightWidth) / 2 + "px";
+    elemText.style.display = "block"
+    for (let i = 0; i < str.length; i++)
+    {
+        setTimeout(() => { elemText.textContent = str.substring(0, i + 1) }, i * 50);
+    }
+    setTimeout(() => { elemText.style.display = "none"; stop = false; elemText.innerHTML = "" }, str.length * 50);
+}
+function dialogue(numb)
+{
+    if (numb == 1)
+    {
+        stop = true;
+        fillText = "Привет игрок! Ты находишься в замке, надо найти выход & отыскать всё необходимое для этого. Удачи!";
+        anim(fillText);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const canvas = document.getElementById("myCanvas");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerHeight;
+canvas.height = window.innerHeight;
+if (window.innerWidth >= window.innerHeight)
+{
+  canvas.style.marginLeft = (window.innerWidth - window.innerHeight) / 2 + "px";
+}
+else
+{
+  canvas.style.marginTop = (window.innerHeight - window.innerWidth) / 2 + "px";
+}
+let objects = [];
+let index = 0;
+const imgHeightWidth = canvas.width / 5;
+
+let gamer = [];
+for (let i = 0; i < 4; i++)
+{
+  gamer[i] = new Image();
+  gamer[i].src = "img/wizzard" + i + ".png";
+}
+const pos = {
+  x: 0,
+  y: 0
+};
+let timeVarx = pos.x;
+let timeVary = pos.y;
+window.onload = () =>
+{
+  window.addEventListener("keydown", move, false);
+  for (let i = 0; i <= 17; i++)
+  {
+    objects[i] = new Image();
+    if (i <= 6)
+    {
+      objects[i].src = "img/wall_vines" + i + ".png";
+    } else if (i > 6 && i <= 12)
+    {
+      const blockid = i - 7;
+      objects[i].src = "img/crystal_floor" + blockid + ".png";
+    } else if (i == 13)
+    {
+      objects[i].src = "img/dngn_closed_door.png";
+    }
+    else if (i == 14)
+    {
+      objects[i].src = "img/dngn_open_door.png";
+    }
+    else if (i == 15)
+    {
+
+      objects[i].src = `img/fire.png`;
+    }
+    else if (i == 16)
+    {
+
+      objects[i].src = `img/bar1.png`;
+    }
+    else if (i == 17)
+    {
+      objects[i].src = "img/statue.png"
+    }
+  }
+  document.getElementById("body").style.backgroundColor = "black";
+  game();
+};
+function game()
+{
+  canvas.width = window.innerHeight;
+  canvas.height = window.innerHeight;
+  if (window.innerWidth >= window.innerHeight)
+  {
+    canvas.style.marginLeft = (window.innerWidth - window.innerHeight) / 2 + "px";
+  }
+  else
+  {
+    canvas.style.marginTop = (window.innerHeight - window.innerWidth) / 2 + "px";
+  }
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  update();
+  requestAnimationFrame(game);
+}
+function update()
+{
+  const idx_x = Math.floor(pos.x / imgHeightWidth);
+  const idx_y = Math.floor(pos.y / imgHeightWidth);
+  const x = pos.x % imgHeightWidth;
+  const y = pos.y % imgHeightWidth;
+  let blocx, blocy;
+  blocx = 7;
+  blocy = 7;
+  if (map.length * imgHeightWidth - pos.x - 7 * imgHeightWidth < 0)
+  {
+    blocx = Math.ceil((map.length * imgHeightWidth - pos.x) / imgHeightWidth);
+  }
+  if (map.length * imgHeightWidth - pos.y - 7 * imgHeightWidth < 0)
+  {
+    blocy = Math.ceil((map.length * imgHeightWidth - pos.y) / imgHeightWidth);
+  }
+  for (i = 0; i < blocx; i++)
+  {
+    for (j = 0; j < blocy; j++)
+    {
+      render(
+        objects[map[idx_y + j][idx_x + i]],
+        imgHeightWidth * i - x,
+        imgHeightWidth * j - y
+      );
+    }
+  }
+}
+let may = false;
+let xx;
+let yy;
+let was = false;
+function render(img, x, y)
+{
+  if (map[
+    Math.floor(
+      (pos.y + imgHeightWidth + imgHeightWidth / 2.26) / imgHeightWidth
+    )
+  ][Math.floor((pos.x + imgHeightWidth) / imgHeightWidth)] == 15 && stop == false)
+  {
+    dialogue(1);
+  }
+  if (pos.x != timeVarx || pos.y != timeVary)
+  {
+    index == 3 ? (index = 0) : index++;
+  }
+  if (map[
+    Math.floor(
+      (pos.y + imgHeightWidth + imgHeightWidth / 2.26) / imgHeightWidth
+    )
+  ][Math.floor((pos.x + imgHeightWidth) / imgHeightWidth)] == 13 ||
+    map[
+    Math.floor(
+      (pos.y + imgHeightWidth + imgHeightWidth / 2.26) / imgHeightWidth
+    )
+    ][Math.floor((pos.x + imgHeightWidth) / imgHeightWidth)] == 14
+  )
+  {
+    if (img != objects[13])
+    {
+      ctx.drawImage(img, x, y, imgHeightWidth, imgHeightWidth);
+    }
+    else if (may == true)
+    {
+      ctx.drawImage(img, x, y, imgHeightWidth, imgHeightWidth);
+    }
+    else 
+    {
+      ctx.drawImage(objects[14], x, y, imgHeightWidth, imgHeightWidth);
+      map[
+        Math.floor(
+          (pos.y + imgHeightWidth + imgHeightWidth / 2.26) / imgHeightWidth
+        )
+      ][Math.floor((pos.x + imgHeightWidth) / imgHeightWidth)] = 14;
+      may = true;
+      xx = Math.floor((pos.x + imgHeightWidth) / imgHeightWidth);
+      yy = Math.floor((pos.y + imgHeightWidth + imgHeightWidth / 2.26) / imgHeightWidth);
+      was = true;
+    }
+  } else
+  {
+    if (was == true)
+    {
+      map[yy][xx] = 13;
+    }
+    may = false;
+    ctx.drawImage(img, x, y, imgHeightWidth, imgHeightWidth);
+    ctx.drawImage(
+      gamer[index],
+      imgHeightWidth,
+      imgHeightWidth,
+      imgHeightWidth / 2.66,
+      imgHeightWidth / 2.26
+    );
+  }
+  timeVarx = pos.x;
+  timeVary = pos.y;
+}
+function move(event)
+{
+  if (event.keyCode == "37")
+  {
+    //arrow left	37
+    if (
+      map[Math.floor((pos.y + imgHeightWidth) / imgHeightWidth)][
+      Math.floor(
+        (pos.x + imgHeightWidth - imgHeightWidth / 30) / imgHeightWidth
+      )
+      ] <= 6 || map[Math.floor((pos.y + imgHeightWidth) / imgHeightWidth)][
+      Math.floor(
+        (pos.x + imgHeightWidth - imgHeightWidth / 30) / imgHeightWidth
+      )
+      ] == 16 || map[Math.floor((pos.y + imgHeightWidth) / imgHeightWidth)][
+      Math.floor(
+        (pos.x + imgHeightWidth - imgHeightWidth / 30) / imgHeightWidth
+      )
+      ] == 17
+    )
+    {
+      return;
+    }
+    pos.x -= imgHeightWidth / 30;
+    if (pos.x < 0) pos.x = 0;
+  }
+  if (event.keyCode == "38")
+  {
+    //arrow up	38
+    //верхний угол картинки
+    if (
+      map[
+      Math.floor(
+        (pos.y + imgHeightWidth - imgHeightWidth / 30) / imgHeightWidth
+      )
+      ][Math.floor((pos.x + imgHeightWidth) / imgHeightWidth)] <= 6 ||
+      map[
+      Math.floor(
+        (pos.y + imgHeightWidth - imgHeightWidth / 30) / imgHeightWidth
+      )
+      ][Math.floor((pos.x + imgHeightWidth) / imgHeightWidth)] == 16 ||
+      map[
+      Math.floor(
+        (pos.y + imgHeightWidth - imgHeightWidth / 30) / imgHeightWidth
+      )
+      ][Math.floor((pos.x + imgHeightWidth) / imgHeightWidth)] == 17
+    )
+    {
+      return;
+    }
+    pos.y -= imgHeightWidth / 30;
+    if (pos.y < 0) pos.y = 0;
+  }
+  if (event.keyCode == "39")
+  {
+    //arrow right	39
+
+    if (
+      map[Math.floor((pos.y + imgHeightWidth) / imgHeightWidth)][
+      Math.floor(
+        (pos.x +
+          imgHeightWidth +
+          imgHeightWidth / 30 +
+          imgHeightWidth / 2.66) /
+        imgHeightWidth
+      )
+      ] <= 6 ||
+      map[Math.floor((pos.y + imgHeightWidth) / imgHeightWidth)][
+      Math.floor(
+        (pos.x +
+          imgHeightWidth +
+          imgHeightWidth / 30 +
+          imgHeightWidth / 2.66) /
+        imgHeightWidth
+      )
+      ] == 16 ||
+      map[Math.floor((pos.y + imgHeightWidth) / imgHeightWidth)][
+      Math.floor(
+        (pos.x +
+          imgHeightWidth +
+          imgHeightWidth / 30 +
+          imgHeightWidth / 2.66) /
+        imgHeightWidth
+      )
+      ] == 17
+    )
+    {
+      return;
+    }
+    pos.x += imgHeightWidth / 30;
+    if (pos.x > map.length * imgHeightWidth)
+      pos.x = map.length * imgHeightWidth;
+  }
+  if (event.keyCode == "40")
+  {
+    //arrow down	40
+    if (
+      map[
+      Math.floor(
+        (pos.y +
+          imgHeightWidth +
+          imgHeightWidth / 30 +
+          imgHeightWidth / 2.26) /
+        imgHeightWidth
+      )
+      ][Math.floor((pos.x + imgHeightWidth) / imgHeightWidth)] <= 6 ||
+      map[
+      Math.floor(
+        (pos.y +
+          imgHeightWidth +
+          imgHeightWidth / 30 +
+          imgHeightWidth / 2.26) /
+        imgHeightWidth
+      )
+      ][Math.floor((pos.x + imgHeightWidth) / imgHeightWidth)] == 16 ||
+      map[
+      Math.floor(
+        (pos.y +
+          imgHeightWidth +
+          imgHeightWidth / 30 +
+          imgHeightWidth / 2.26) /
+        imgHeightWidth
+      )
+      ][Math.floor((pos.x + imgHeightWidth) / imgHeightWidth)] == 17
+    )
+    {
+      return;
+    }
+    pos.y += imgHeightWidth / 30;
+    if (pos.y > map.length * imgHeightWidth)
+      pos.y = map.length * imgHeightWidth;
+  }
+}
+
+
+
+
+
+function teleport()
+{
+    telepCond = false;
+    let xtel, ytel;
+    xtel = Math.floor((pos.x + imgHeightWidth) / imgHeightWidth);
+    ytel = Math.floor((pos.y + imgHeightWidth + imgHeightWidth / 2.26) / imgHeightWidth);
+    while ((xtel == Math.floor((pos.x + imgHeightWidth) / imgHeightWidth) ||
+        ytel == Math.floor((pos.y + imgHeightWidth + imgHeightWidth / 2.26) / imgHeightWidth)) ||
+        map[ytel][xtel] != 34)
+    {
+        xtel = randomInteger(0, map.length - 1);
+        ytel = randomInteger(0, map.length - 1);
+    }
+    setTimeout(() => { telepCond = true; }, 5000);
+    console.log(ytel + " " + xtel);
+    console.log(map[ytel][xtel]);
+    pos.x = xtel * imgHeightWidth - imgHeightWidth;
+    pos.y = ytel * imgHeightWidth - imgHeightWidth;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+let stop = false;
+elemText = document.getElementById("text");
+let fillText;
+
+
+function anim(str)
+{
+    const width = 2 * blockSize * drawScale;
+    elemText.style.fontSize = (dialogFontSize * drawScale) + "px";
+    elemText.style.width = width + "px";
+    elemText.style.left = (window.innerWidth - width) / 2 + "px";
+    elemText.style.top = window.innerHeight / 2 - width + "px";
+    elemText.style.display = "block"
+    for (let i = 0; i < str.length; i++)
+    {
+        setTimeout(() => { elemText.textContent = str.substring(0, i + 1) }, i * 100);
+    }
+    setTimeout(() => { elemText.style.display = "none"; stop = false; elemText.innerHTML = "" }, str.length * 100 + 500);
+}
+function dialogue(numb)
+{
+    if (numb == 1)
+    {
+        stop = true;
+        fillText = "Привет игрок! Ты находишься в замке, надо найти выход & отыскать всё необходимое для этого. По дороге ты будешь получать подсказки, на таких же красных квадратиках. Удачи!";
+        anim(fillText);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+let finalPath = [];
+let path = [{ x: GhostPos.x, y: GhostPos.y }];
+getDistToGamer(path);
+function getDistToGamer(path)
+{
+    console.log(JSON.stringify(getMapIndex(path[path.length - 1])) + " " + JSON.stringify(getMapIndex(gamerPos)));
+    if (JSON.stringify(getMapIndex(path[path.length - 1])) == JSON.stringify(getMapIndex(gamerPos)))
+    {
+
+        if (path.length < finalPath.length)
+        {
+            finalPath = path;
+        } else if (finalPath.length == 0)
+        {
+            finalPath = path;
+        }
+        path.pop();
+        return;
+    }
+
+    if (path.indexOf(path[path.length - 1]) > 1)
+    {
+        path.pop();
+        return;
+    }
+    
+    if (!solidBlocks.includes(getMapBlock({ x: path[path.length - 1].x - blockSize, y: path[path.length - 1].y })))
+    {
+        path.push({ x: path[path.length - 1].x - blockSize, y: path[path.length - 1].y });
+        getDistToGamer(path);
+    }
+
+    if (!solidBlocks.includes(getMapBlock({ x: path[path.length - 1].x, y: path[path.length - 1].y - blockSize })))
+    {
+        path.push({ x: path[path.length - 1].x, y: path[path.length - 1].y - blockSize });
+        getDistToGamer(path)
+    }
+
+    if (!solidBlocks.includes(getMapBlock({ x: path[path.length - 1].x + blockSize, y: path[path.length - 1].y })))
+    {
+        path.push({ x: path[path.length - 1].x + blockSize, y: path[path.length - 1].y });
+        getDistToGamer(path)
+    }
+
+    if (!solidBlocks.includes(getMapBlock({ x: path[path.length - 1].x, y: path[path.length - 1].y + blockSize })))
+    {
+        path.push({ x: path[path.length - 1].x, y: path[path.length - 1].y + blockSize });
+        getDistToGamer(path)
+    }
+    path.pop();
+    return;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+let finalPath = [];
+let path = [{ x: GhostPos.x, y: GhostPos.y }];
+getDistToGamer();
+function getDistToGamer()
+{
+    console.log(JSON.stringify(path));
+    if (JSON.stringify(getMapIndex(path[path.length - 1])) == JSON.stringify(getMapIndex(gamerPos)))
+    {
+
+        if (path.length < finalPath.length)
+        {
+            finalPath = path.slice();
+
+        } else if (finalPath.length == 0)
+        {
+            finalPath = path.slice();
+        }
+        path.pop();
+        return;
+    }
+
+    if (path.indexOf(path[path.length - 1]) > 1)
+    {
+        path.pop();
+        return;
+    }
+    if (!solidBlocks.includes(getMapBlock({ x: path[path.length - 1].x - blockSize, y: path[path.length - 1].y })))
+    {
+        path.push({ x: path[path.length - 1].x - blockSize, y: path[path.length - 1].y });
+        getDistToGamer();
+    }
+
+    if (!solidBlocks.includes(getMapBlock({ x: path[path.length - 1].x, y: path[path.length - 1].y - blockSize })))
+    {
+        path.push({ x: path[path.length - 1].x, y: path[path.length - 1].y - blockSize });
+        getDistToGamer()
+    }
+
+    if (!solidBlocks.includes(getMapBlock({ x: path[path.length - 1].x + blockSize, y: path[path.length - 1].y })))
+    {
+        path.push({ x: path[path.length - 1].x + blockSize, y: path[path.length - 1].y });
+        getDistToGamer()
+    }
+
+    if (!solidBlocks.includes(getMapBlock({ x: path[path.length - 1].x, y: path[path.length - 1].y + blockSize })))
+    {
+        path.push({ x: path[path.length - 1].x, y: path[path.length - 1].y + blockSize });
+        getDistToGamer()
+    }
+    path.pop();
+    return;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*let finalPath = [];
+let path = [getMapIndex(GhostPos)];
+getDistToGamer();
+function getDistToGamer()
+{
+    console.log(JSON.stringify(path));
+    if (JSON.stringify(path[path.length - 1]) == JSON.stringify(getMapIndex(gamerPos)))
+    {
+
+        if (path.length < finalPath.length)
+        {
+            finalPath = path.slice();
+
+        } else if (finalPath.length == 0)
+        {
+            finalPath = path.slice();
+        }
+        path.pop();
+        return;
+    }
+
+    if (path.indexOf(path[path.length - 1]) > 1)
+    {
+        path.pop();
+        return;
+    }
+    if (!solidBlocks.includes(gameMap[path[path.length - 1].y][path[path.length - 1].x - 1]))
+    {
+        path.push({ x: path[path.length - 1].x - 1, y: path[path.length - 1].y });
+        getDistToGamer();
+    }
+
+    if (!solidBlocks.includes(gameMap[path[path.length - 1].y - 1][path[path.length - 1].x]))
+    {
+        path.push({ x: path[path.length - 1].x, y: path[path.length - 1].y - 1 });
+        getDistToGamer()
+    }
+
+    if (!solidBlocks.includes(gameMap[path[path.length - 1].y][path[path.length - 1].x + 1]))
+    {
+        path.push({ x: path[path.length - 1].x + 1, y: path[path.length - 1].y });
+        getDistToGamer()
+    }
+
+    if (!solidBlocks.includes(gameMap[path[path.length - 1].y + 1][path[path.length - 1].x]))
+    {
+        path.push({ x: path[path.length - 1].x, y: path[path.length - 1].y + 1 });
+        getDistToGamer()
+    }
+    path.pop();
+    return;
+}*/
+
+
+
+
+
+
+//[{ "x":8,"y":4 },{ "x":7,"y":4 },{ "x":6,"y":4 },{ "x":6,"y":5 },
+//{ "x": 6, "y": 6 }, { "x": 5, "y": 6 }, { "x": 4, "y": 6 }, 
+//{ "x": 3, "y": 6 }, { "x": 2, "y": 6 }, { "x": 2, "y": 5 }, 
+//{ "x": 2, "y": 4 }, { "x": 2, "y": 3 }, { "x": 2, "y": 2 }]
+
+
+
+
+
+
+
+
+
+
+    // getDistToGamer({ x: point.x, y: point.y - 1 }, gamer);
+    // getDistToGamer({ x: point.x, y: point.y + 1 }, gamer);
+    // getDistToGamer({ x: point.x - 1, y: point.y }, gamer);
+    // getDistToGamer({ x: point.x + 1, y: point.y }, gamer);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+let times = 0;
+let finalPath = [];
+let path = [];
+getDistToGamer(getMapIndex(GhostPos), getMapIndex({ x: gamerPos.x + 2 * blockSize, y: gamerPos.y + 2 * blockSize }));
+
+function getDistToGamer(point, gamer)
+{
+    //next 5 sentences may be deleted
+    times++;
+    console.log(times);
+    console.log(JSON.stringify(finalPath));
+    //console.log(JSON.stringify(gamer));
+    //console.log(JSON.stringify(path));
+
+    if (path.findIndex(p => (p.x == point.x && p.y == point.y)) >= 0 || solidBlocks.includes(gameMap[point.y - 1][point.x - 1]) || (path.length > finalPath.length && finalPath.length != 0))
+    {
+        return;
+    }
+
+    path.push(point);
+
+    if (point.x == gamer.x && point.y == gamer.y)
+    {
+        if (path.length < finalPath.length || finalPath.length == 0)
+        {
+            finalPath = path.slice();
+        }
+
+        path.pop();
+        return;
+    }
+    const DiffX = point.x - gamer.x;
+    const DiffY = point.y - gamer.y;
+
+    let moveX;
+    let moveY;
+
+    if (Math.abs(DiffX) > Math.abs(DiffY))
+    {
+        if (DiffX > 0)
+        {
+            moveX = true;
+            getDistToGamer({ x: point.x - 1, y: point.y }, gamer);
+        } else
+        {
+            moveX = false;
+            getDistToGamer({ x: point.x + 1, y: point.y }, gamer);
+        }
+        if (DiffY > 0)
+        {
+            moveY = true;
+            getDistToGamer({ x: point.x, y: point.y - 1 }, gamer);
+        } else
+        {
+            moveY = false;
+            getDistToGamer({ x: point.x, y: point.y + 1 }, gamer);
+        }
+
+    } else
+    {
+        if (DiffY > 0)
+        {
+            moveY = true;
+            getDistToGamer({ x: point.x, y: point.y - 1 }, gamer);
+        } else
+        {
+            moveY = false;
+            getDistToGamer({ x: point.x, y: point.y + 1 }, gamer);
+        }
+        if (DiffX > 0)
+        {
+            moveX = true;
+            getDistToGamer({ x: point.x - 1, y: point.y }, gamer);
+        } else
+        {
+            moveX = false;
+            getDistToGamer({ x: point.x + 1, y: point.y }, gamer);
+        }
+    }
+
+    if (moveX)
+    {
+        getDistToGamer({ x: point.x + 1, y: point.y }, gamer);
+    }
+    else
+    {
+        getDistToGamer({ x: point.x - 1, y: point.y }, gamer);
+    }
+    if (moveY)
+    {
+        getDistToGamer({ x: point.x, y: point.y + 1 }, gamer);
+    }
+    else
+    {
+        getDistToGamer({ x: point.x, y: point.y - 1 }, gamer);
+    }
+
+    path.pop();
+    return;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const mapWithArrows = [];
+
+
+
+
+function getDistToGamer()
+{
+    for (let i = 0; i < gameMap.length; i++)
+    {
+        mapWithArrows[i] = [];
+        for (let j = 0; j < gameMap[0].length; j++)
+        {
+            mapWithArrows[i][j] = null;
+        }
+    }
+    const GhostPosMapped = getMapIndex({ x: GhostPos.x - 1, y: GhostPos.y - 1 });
+    const GamerPos = getMapIndex({ x: gamerPos.x + blockSize, y: gamerPos.y + blockSize });
+    const queuedOperations = [GamerPos];
+    let i;
+    while ((i = queuedOperations.shift()) !== undefined)
+    {
+        if (mapWithArrows[i.y + 1][i.x] === null && !solidBlocks.includes(gameMap[i.y + 1][i.x]))
+        {
+            mapWithArrows[i.y + 1][i.x] = "MoveUpGhost();";
+            queuedOperations.push({ x: i.x, y: i.y + 1 });
+        }
+        if (mapWithArrows[i.y][i.x - 1] === null && !solidBlocks.includes(gameMap[i.y][i.x - 1]))
+        {
+            mapWithArrows[i.y][i.x - 1] = "MoveRightGhost();";
+            queuedOperations.push({ x: i.x - 1, y: i.y });
+        }
+        if (mapWithArrows[i.y - 1][i.x] === null && !solidBlocks.includes(gameMap[i.y - 1][i.x]))
+        {
+            mapWithArrows[i.y - 1][i.x] = "MoveDownGhost();";
+            queuedOperations.push({ x: i.x, y: i.y - 1 });
+        }
+        if (mapWithArrows[i.y][i.x + 1] === null && !solidBlocks.includes(gameMap[i.y][i.x + 1]))
+        {
+            mapWithArrows[i.y][i.x + 1] = "MoveLeftGhost();";
+            queuedOperations.push({ x: i.x + 1, y: i.y });
+        }
+    }
+}
